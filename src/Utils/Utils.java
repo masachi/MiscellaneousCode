@@ -1,3 +1,5 @@
+package Utils;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -50,4 +52,5 @@ public class Utils {
         con.setRequestMethod("GET");
         return con.getInputStream();
     }
+
 }

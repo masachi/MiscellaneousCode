@@ -1,10 +1,6 @@
-import java.io.FileOutputStream;
+import Utils.Utils;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,7 +10,7 @@ import static java.lang.System.exit;
  * Created by sdlds on 2016/6/1.
  */
 public class TwitterPhotoDownload {
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) throws Exception{
         String URL = "https://twitter.com/sherryken777";
         String originstr = Utils.streamToString(Utils.getUrlStream(URL));
         //String originstr = "";
