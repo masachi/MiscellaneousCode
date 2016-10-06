@@ -1,7 +1,4 @@
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.ConnectException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -52,5 +49,22 @@ public class DownloadModule {
          //   return filename;
         //}
         return filename;
+    }
+
+    public static boolean download_example(String value,String filename) throws IOException {
+        try {
+            File file = new File(filename);
+            FileWriter os = new FileWriter(file);
+            if(!file.exists()){
+                file.createNewFile();
+            }
+            os.write(value);
+            os.flush();
+            os.close();
+            return true;
+        }
+        catch(Exception e){
+            return false;
+        }
     }
 }
