@@ -89,7 +89,6 @@ public class CompanyDatabaseToExcel {
         wc.setJavaScriptTimeout(0);
 //        System.out.println(page);
         String pageXml = page.asXml(); //以xml的形式获取响应文本
-
 //        doc = Jsoup.connect(Url).get();
         doc = Jsoup.parse(pageXml);
         System.out.println(doc);
@@ -113,7 +112,7 @@ public class CompanyDatabaseToExcel {
     }
 
     private static String replaceSpaceToBash(String companyName){
-        companyName = companyName.replace(" & ","-").replace("(","").replace(")","");
+        companyName = companyName.replace(" & ","-").replace("(","").replace(")","").replace("\'","");
         companyName = companyName.replace(".","");
         companyName = companyName.replace(" ","-");
         companyName = companyName.toLowerCase();
@@ -135,44 +134,46 @@ public class CompanyDatabaseToExcel {
         if(title.equals(" Internet Yellow Pages ")){
             return;
         }
-        System.out.println(title);
+        //System.out.println(title);
         String name = doc.getElementsByClass("com_name").select("h1").text();
-        System.out.println(name);
+        //System.out.println(name);
         String addr1 = doc.getElementsByClass("com_address").select("span").text();
 //        System.out.println(addr.substring(0,addr.length()-7));
         String addr = addr1.substring(0,addr1.length()-7);
 //        System.out.println(addr.substring(addr.length()-6,addr.length()));
         String zip = addr1.substring(addr1.length()-6,addr1.length());
         String tele_head = doc.getElementsByClass("telephone").select("div").text();
-        String tele_tail = doc.getElementsByClass("telephone").select("div").toString();
-        Pattern p = Pattern.compile("data-last=\"(\\d+)\"");
-        Matcher m = p.matcher(tele_tail);
-        //System.out.println(tele_tail);
         String tele = "";
-        while(m.find()){
-            //System.out.println(m.group(1));
-            tele = m.group(1);
+        if(!tele_head.equals("")) {
+            String tele_tail = doc.getElementsByClass("telephone").select("div").toString();
+            Pattern p = Pattern.compile("data-last=\"(\\d+)\"");
+            Matcher m = p.matcher(tele_tail);
+            //System.out.println(tele_tail);
+            while (m.find()) {
+                //System.out.println(m.group(1));
+                tele = m.group(1);
+            }
+            tele = tele_head.replaceAll("\\s+", "").replace(" ", "").substring(0, 4) + tele;
         }
-        tele = tele_head.replaceAll("\\s+","").replace(" ","").substring(0,4) + tele;
         String fax = "";
-        System.out.println(tele);
-//        if(doc.getElementsByClass("fax") != null){
-//            String fax_head = doc.getElementsByClass("fax").select("div").text();
-//            String fax_tail = doc.getElementsByClass("fax").select("div").toString();
-//            Pattern p1 = Pattern.compile("data-last=\"(\\d+)\"");
-//            Matcher m1 = p1.matcher(fax_tail);
-//            System.out.println(fax_tail);
-//            while(m1.find()){
-//                fax = m.group(1);
-//            }
-//            fax = fax_head.replaceAll("\\s+","").replace(" ","").substring(0,4) + fax;
-//            System.out.println(fax);
-//        }
+        //System.out.println(tele);
+        String fax_head = doc.getElementsByClass("fax").select("div").text();
+        if(!fax_head.equals("")){
+            String fax_tail = doc.getElementsByClass("fax").select("div").toString();
+            Pattern p1 = Pattern.compile("data-last=\"(\\d+)\"");
+            Matcher m1 = p1.matcher(fax_tail);
+            System.out.println(fax_tail);
+            while(m1.find()){
+                fax = m1.group(1);
+            }
+            fax = fax_head.replaceAll("\\s+","").replace(" ","").substring(0,4) + fax;
+            System.out.println(fax);
+        }
 
-        WriteExcel(title,name,addr,zip,tele);
+        WriteExcel(title,name,addr,zip,tele,fax);
     }
 
-    private static void WriteExcel(String title,String name,String addr,String zip,String phone) throws Exception{
+    private static void WriteExcel(String title,String name,String addr,String zip,String phone,String fax) throws Exception{
         row = sheet.getRow(rownum);
         String source = "EYP2016" + title;
         Cell cell = null;
@@ -196,6 +197,8 @@ public class CompanyDatabaseToExcel {
         cell.setCellValue(Integer.parseInt(zip));
         cell = row.createCell(8);
         cell.setCellValue(Integer.parseInt(phone));
+        cell = row.createCell(10);
+        cell.setCellValue(Integer.parseInt(fax));
         rownum++;
     }
 }
