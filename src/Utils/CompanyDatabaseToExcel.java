@@ -167,7 +167,7 @@ public class CompanyDatabaseToExcel {
                 fax = m1.group(1);
             }
             fax = fax_head.replaceAll("\\s+","").replace(" ","").substring(0,4) + fax;
-            System.out.println(fax);
+            //System.out.println(fax);
         }
 
         WriteExcel(title,name,addr,zip,tele,fax);
@@ -195,10 +195,15 @@ public class CompanyDatabaseToExcel {
         cell.setCellValue(addr);
         cell = row.createCell(7);
         cell.setCellValue(Integer.parseInt(zip));
-        cell = row.createCell(8);
-        cell.setCellValue(Integer.parseInt(phone));
-        cell = row.createCell(10);
-        cell.setCellValue(Integer.parseInt(fax));
+        if(!phone.equals("")) {
+            cell = row.createCell(8);
+            cell.setCellValue(Integer.parseInt(phone));
+        }
+        if(!fax.equals("")) {
+            cell = row.createCell(10);
+            cell.setCellValue(Integer.parseInt(fax));
+        }
         rownum++;
+        System.out.println("YES");
     }
 }
