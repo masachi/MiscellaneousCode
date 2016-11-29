@@ -113,7 +113,7 @@ public class CompanyDatabaseToExcel {
     }
 
     private static String replaceSpaceToBash(String companyName){
-        companyName = companyName.replace(" & ","-");
+        companyName = companyName.replace(" & ","-").replace("(","").replace(")","");
         companyName = companyName.replace(".","");
         companyName = companyName.replace(" ","-");
         companyName = companyName.toLowerCase();
