@@ -142,7 +142,7 @@ public class CompanyDatabaseToExcel {
 //        System.out.println(doc.getElementsByTag("title").text());
         String title = doc.getElementsByTag("title").text().split("\\|")[1];
         if(title.equals(" Internet Yellow Pages ")){
-            System.out.print(companyName + "  ");
+            System.out.println(companyName);
             System.out.println(doc.getElementsByTag("title").text().split("\\|")[0]);
             return;
         }

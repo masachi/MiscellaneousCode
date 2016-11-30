@@ -68,7 +68,7 @@
         <entry file="file://$PROJECT_DIR$/src/Utils/CompanyDatabaseToExcel.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="255">
-              <caret line="144" column="49" selection-start-line="144" selection-start-column="49" selection-end-line="144" selection-end-column="49" />
+              <caret line="144" column="30" selection-start-line="144" selection-start-column="30" selection-end-line="144" selection-end-column="30" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -902,7 +902,7 @@
       <workItem from="1479375187009" duration="55000" />
       <workItem from="1480382369303" duration="27518000" />
       <workItem from="1480468233351" duration="2860000" />
-      <workItem from="1480472576045" duration="4102000" />
+      <workItem from="1480472576045" duration="4159000" />
     </task>
     <task id="LOCAL-00001" summary="Add Base64.Although it does not support the image which size is bigger than 20KB(Image I want is bigger than 20KB.........)">
       <created>1465713050939</created>
@@ -960,11 +960,18 @@
       <option name="project" value="LOCAL" />
       <updated>1480476254428</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="last version">
+      <created>1480476753486</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1480476753486</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="168577000" />
+    <option name="totallyTimeSpent" value="168634000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
@@ -1408,7 +1415,7 @@
     <entry file="file://$PROJECT_DIR$/src/Utils/CompanyDatabaseToExcel.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
-          <caret line="144" column="49" selection-start-line="144" selection-start-column="49" selection-end-line="144" selection-end-column="49" />
+          <caret line="144" column="30" selection-start-line="144" selection-start-column="30" selection-end-line="144" selection-end-column="30" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
