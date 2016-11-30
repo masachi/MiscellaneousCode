@@ -67,8 +67,8 @@
       <file leaf-file-name="CompanyDatabaseToExcel.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Utils/CompanyDatabaseToExcel.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="124" column="100" selection-start-line="124" selection-start-column="100" selection-end-line="124" selection-end-column="100" />
+            <state relative-caret-position="217">
+              <caret line="140" column="41" selection-start-line="140" selection-start-column="41" selection-end-line="140" selection-end-column="41" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -902,7 +902,7 @@
       <workItem from="1479375187009" duration="55000" />
       <workItem from="1480382369303" duration="27518000" />
       <workItem from="1480468233351" duration="2860000" />
-      <workItem from="1480472576045" duration="4461000" />
+      <workItem from="1480472576045" duration="11533000" />
     </task>
     <task id="LOCAL-00001" summary="Add Base64.Although it does not support the image which size is bigger than 20KB(Image I want is bigger than 20KB.........)">
       <created>1465713050939</created>
@@ -974,11 +974,18 @@
       <option name="project" value="LOCAL" />
       <updated>1480476951196</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="last version (will not be updated pa! pa!)">
+      <created>1480477123579</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1480477123579</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="168936000" />
+    <option name="totallyTimeSpent" value="176008000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
@@ -1030,7 +1037,8 @@
     <MESSAGE value="final possibly" />
     <MESSAGE value="last version" />
     <MESSAGE value="last version (will not be updated) if necessary, please change by yourself." />
-    <option name="LAST_COMMIT_MESSAGE" value="last version (will not be updated) if necessary, please change by yourself." />
+    <MESSAGE value="last version (will not be updated pa! pa!)" />
+    <option name="LAST_COMMIT_MESSAGE" value="last version (will not be updated pa! pa!)" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1422,8 +1430,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Utils/CompanyDatabaseToExcel.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="124" column="100" selection-start-line="124" selection-start-column="100" selection-end-line="124" selection-end-column="100" />
+        <state relative-caret-position="217">
+          <caret line="140" column="41" selection-start-line="140" selection-start-column="41" selection-end-line="140" selection-end-column="41" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

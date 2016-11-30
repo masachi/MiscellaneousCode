@@ -2,6 +2,7 @@ package Utils;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
+import com.gargoylesoftware.htmlunit.ProxyConfig;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.commons.logging.LogFactory;
@@ -38,29 +39,36 @@ public class CompanyDatabaseToExcel {
     private static Sheet sheet;
     private static Workbook wb;
     private static Row row = null;
-    private static int rownum = 11;
+    private static int rownum = 39;
     private static int colnum = 0;
     private static String originStr;
     private static Document doc = null;
 
     public static void main(String args[]){
-        try {
-            ReadExcel();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ReadExcel();
 
-            File folder = new File(path);
-            File[] companyFile = folder.listFiles();
-            for (int i = 0; i < companyFile.length; i++) {
-                if (companyFile[i].isFile()) {
-                    getFile(companyFile[i].getAbsolutePath());
+                    File folder = new File(path);
+                    File[] companyFile = folder.listFiles();
+                    for (int i = 0; i < companyFile.length; i++) {
+                        if (companyFile[i].isFile()) {
+                            getFile(companyFile[i].getAbsolutePath());
+                        }
+                    }
+
+                    OutputExcel();
+                    System.exit(0);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                    OutputExcel();
+                    System.exit(-1);
                 }
             }
-
-            OutputExcel();
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            OutputExcel();
-        }
+        }).start();
     }
 
     private static void getFile(String filePath) throws Exception{
@@ -69,6 +77,7 @@ public class CompanyDatabaseToExcel {
             String companyName = reader.nextLine();
             companyName = replaceSpaceToBash(companyName);
             getDataFromWeb(companyName);
+            Thread.sleep(10000);
         }
     }
 
@@ -77,11 +86,14 @@ public class CompanyDatabaseToExcel {
         System.out.println(Url);
 //        originStr = Utils.streamToString(Utils.getUrlStream(Url));
 //        System.out.println(originStr);
-        WebClient wc = new WebClient(BrowserVersion.EDGE);
+        WebClient wc = new WebClient(BrowserVersion.CHROME);
 
         wc.getOptions().setJavaScriptEnabled(true); //启用JS解释器，默认为true
         wc.getOptions().setCssEnabled(false); //禁用css支持
+//        wc.getOptions().setProxyConfig(new ProxyConfig("185.10.17.134",3128));
+        wc.getCookieManager().setCookiesEnabled(false);
         wc.getOptions().setThrowExceptionOnScriptError(false); //js运行错误时，是否抛出异常
+        wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
         wc.getOptions().setTimeout(10000); //设置连接超时时间 ，这里是10S。如果为0，则无限期等待
 
         wc.waitForBackgroundJavaScript(600*1000);
@@ -123,9 +135,10 @@ public class CompanyDatabaseToExcel {
     private static String replaceSpaceToBash(String companyName){
         companyName = companyName.trim();
         companyName = companyName.replace(" & ","-").replace("(","").replace(")","").replace("\'"," ").replace("&"," ");
-        companyName = companyName.replace(". ","").replace("."," ");
+        companyName = companyName.replace(". "," ").replace("."," ");
         companyName = companyName.replace(" ","-");
         companyName = companyName.toLowerCase();
+        companyName = companyName.trim();
         return companyName;
     }
 
