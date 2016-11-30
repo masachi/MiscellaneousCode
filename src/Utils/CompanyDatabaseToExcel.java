@@ -95,7 +95,7 @@ public class CompanyDatabaseToExcel {
 //        doc = Jsoup.connect(Url).get();
         doc = Jsoup.parse(pageXml);
         //System.out.println(doc);
-        getData();
+        getData(companyName);
     }
 
     private static void ReadExcel() throws Exception{
@@ -129,7 +129,7 @@ public class CompanyDatabaseToExcel {
         return companyName;
     }
 
-    private static void getData() throws Exception{
+    private static void getData(String companyName) throws Exception{
 //        Pattern name = Pattern.compile("<div class=\"col-md-8\"><h1>(.*?)</h1></div><div class=\"col-md-4\">");
 //        Pattern addr = Pattern.compile("<div class=\"row com_address\"><p><span>(.*?)</span></p></div>");
 //        Pattern phone = Pattern.compile("");
@@ -142,6 +142,7 @@ public class CompanyDatabaseToExcel {
 //        System.out.println(doc.getElementsByTag("title").text());
         String title = doc.getElementsByTag("title").text().split("\\|")[1];
         if(title.equals(" Internet Yellow Pages ")){
+            System.out.print(companyName + "  ");
             System.out.println(doc.getElementsByTag("title").text().split("\\|")[0]);
             return;
         }
