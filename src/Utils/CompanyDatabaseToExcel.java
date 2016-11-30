@@ -43,18 +43,24 @@ public class CompanyDatabaseToExcel {
     private static String originStr;
     private static Document doc = null;
 
-    public static void main(String args[]) throws Exception{
-        ReadExcel();
+    public static void main(String args[]){
+        try {
+            ReadExcel();
 
-        File folder = new File(path);
-        File[] companyFile = folder.listFiles();
-        for(int i=0;i<companyFile.length;i++){
-            if(companyFile[i].isFile()){
-                getFile(companyFile[i].getAbsolutePath());
+            File folder = new File(path);
+            File[] companyFile = folder.listFiles();
+            for (int i = 0; i < companyFile.length; i++) {
+                if (companyFile[i].isFile()) {
+                    getFile(companyFile[i].getAbsolutePath());
+                }
             }
-        }
 
-        OutputExcel();
+            OutputExcel();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            OutputExcel();
+        }
     }
 
     private static void getFile(String filePath) throws Exception{
@@ -73,9 +79,6 @@ public class CompanyDatabaseToExcel {
 //        System.out.println(originStr);
         WebClient wc = new WebClient(BrowserVersion.EDGE);
 
-        LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log","org.apache.commons.logging.impl.NoOpLog");
-        java.util.logging.Logger.getLogger("net.sourceforge.htmlunit").setLevel(java.util.logging.Level.OFF);
-
         wc.getOptions().setJavaScriptEnabled(true); //启用JS解释器，默认为true
         wc.getOptions().setCssEnabled(false); //禁用css支持
         wc.getOptions().setThrowExceptionOnScriptError(false); //js运行错误时，是否抛出异常
@@ -91,7 +94,7 @@ public class CompanyDatabaseToExcel {
         String pageXml = page.asXml(); //以xml的形式获取响应文本
 //        doc = Jsoup.connect(Url).get();
         doc = Jsoup.parse(pageXml);
-        System.out.println(doc);
+        //System.out.println(doc);
         getData();
     }
 
@@ -104,16 +107,23 @@ public class CompanyDatabaseToExcel {
         //System.out.println(row.getCell(5));
     }
 
-    private static void OutputExcel() throws IOException{
-        FileOutputStream fileOutputStream = new FileOutputStream(excelPath);
-        wb.write(fileOutputStream);
-        fileOutputStream.flush();
-        fileOutputStream.close();
+    private static void OutputExcel(){
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(excelPath);
+            wb.write(fileOutputStream);
+            fileOutputStream.flush();
+            fileOutputStream.close();
+            System.out.println("Success");
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private static String replaceSpaceToBash(String companyName){
-        companyName = companyName.replace(" & ","-").replace("(","").replace(")","").replace("\'","");
-        companyName = companyName.replace(".","");
+        companyName = companyName.trim();
+        companyName = companyName.replace(" & ","-").replace("(","").replace(")","").replace("\'","").replace("&"," ");
+        companyName = companyName.replace(". ","").replace("."," ");
         companyName = companyName.replace(" ","-");
         companyName = companyName.toLowerCase();
         return companyName;
@@ -132,6 +142,7 @@ public class CompanyDatabaseToExcel {
 //        System.out.println(doc.getElementsByTag("title").text());
         String title = doc.getElementsByTag("title").text().split("\\|")[1];
         if(title.equals(" Internet Yellow Pages ")){
+            System.out.println(doc.getElementsByTag("title").text().split("\\|")[0]);
             return;
         }
         //System.out.println(title);
@@ -162,7 +173,7 @@ public class CompanyDatabaseToExcel {
             String fax_tail = doc.getElementsByClass("fax").select("div").toString();
             Pattern p1 = Pattern.compile("data-last=\"(\\d+)\"");
             Matcher m1 = p1.matcher(fax_tail);
-            System.out.println(fax_tail);
+            //System.out.println(fax_tail);
             while(m1.find()){
                 fax = m1.group(1);
             }
@@ -170,11 +181,13 @@ public class CompanyDatabaseToExcel {
             //System.out.println(fax);
         }
 
+        System.out.println(title+","+name+","+addr+","+zip+","+tele+","+fax);
+
         WriteExcel(title,name,addr,zip,tele,fax);
     }
 
     private static void WriteExcel(String title,String name,String addr,String zip,String phone,String fax) throws Exception{
-        row = sheet.getRow(rownum);
+        row = sheet.createRow(rownum);
         String source = "EYP2016" + title;
         Cell cell = null;
         cell = row.createCell(1);
@@ -203,7 +216,8 @@ public class CompanyDatabaseToExcel {
             cell = row.createCell(10);
             cell.setCellValue(Integer.parseInt(fax));
         }
+        System.out.println("YES"+"---"+String.valueOf(rownum));
         rownum++;
-        System.out.println("YES");
+        colnum++;
     }
 }
