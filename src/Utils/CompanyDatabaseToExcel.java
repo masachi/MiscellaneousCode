@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.SocketException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -102,32 +103,41 @@ public class CompanyDatabaseToExcel {
         }
     }
 
-    private static void getDataFromWeb(String companyName) throws Exception{
-        String Url = URL_HEAD + companyName;
-        System.out.println(Url);
+    private static void getDataFromWeb(String companyName){
+        try {
+            String Url = URL_HEAD + companyName;
+            System.out.println(Url);
 //        originStr = Utils.streamToString(Utils.getUrlStream(Url));
 //        System.out.println(originStr);
 
-        wc.getOptions().setJavaScriptEnabled(true); //启用JS解释器，默认为true
-        wc.getOptions().setCssEnabled(false); //禁用css支持
+            wc.getOptions().setJavaScriptEnabled(true); //启用JS解释器，默认为true
+            wc.getOptions().setCssEnabled(false); //禁用css支持
 //        wc.getOptions().setProxyConfig(new ProxyConfig("72.159.158.210",3128));
-        wc.getCookieManager().setCookiesEnabled(false);
-        wc.getOptions().setThrowExceptionOnScriptError(false); //js运行错误时，是否抛出异常
-        wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
-        wc.getOptions().setTimeout(10000); //设置连接超时时间 ，这里是10S。如果为0，则无限期等待
+            wc.getCookieManager().setCookiesEnabled(false);
+            wc.getOptions().setThrowExceptionOnScriptError(false); //js运行错误时，是否抛出异常
+            wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
+            wc.getOptions().setTimeout(10000); //设置连接超时时间 ，这里是10S。如果为0，则无限期等待
 
-        wc.waitForBackgroundJavaScript(600*1000);
-        wc.setAjaxController(new NicelyResynchronizingAjaxController());
+            wc.waitForBackgroundJavaScript(600 * 1000);
+            wc.setAjaxController(new NicelyResynchronizingAjaxController());
 
-        HtmlPage page = wc.getPage(Url);
-        wc.waitForBackgroundJavaScript(1000*3);
-        wc.setJavaScriptTimeout(0);
+            HtmlPage page = wc.getPage(Url);
+            wc.waitForBackgroundJavaScript(1000 * 3);
+            wc.setJavaScriptTimeout(0);
 //        System.out.println(page);
-        String pageXml = page.asXml(); //以xml的形式获取响应文本
+            String pageXml = page.asXml(); //以xml的形式获取响应文本
 //        doc = Jsoup.connect(Url).get();
-        doc = Jsoup.parse(pageXml);
-        //System.out.println(doc);
-        getData(companyName);
+            doc = Jsoup.parse(pageXml);
+            //System.out.println(doc);
+            getData(companyName);
+        }
+        catch (Exception e){
+            if(e instanceof SocketException){
+                proxynum++;
+                SetWebClient();
+                getDataFromWeb(companyName);
+            }
+        }
     }
 
     private static void SetWebClient(){
@@ -231,7 +241,6 @@ public class CompanyDatabaseToExcel {
                 try{
                     SetWebClient();
                     getDataFromWeb(companyName);
-                    return;
                 }
                 catch (Exception e1){
                     e1.printStackTrace();
