@@ -49,13 +49,14 @@ public class CompanyDatabaseToExcel {
     private static ArrayList<Integer> proxyPort = new ArrayList<>();
     private static String companyNameOrigin;
     private static String phoneOrigin;
+    private static int i=0;
 
     public static void main(String args[]){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    HideMe();
+                    //HideMe();
                     ReadExcel();
 
                     SetWebClient();
@@ -96,52 +97,58 @@ public class CompanyDatabaseToExcel {
             phoneOrigin = originStr.substring(originStr.length()-9,originStr.length()).replace(" ","");
             String companyName = originStr.substring(0,originStr.length()-9).replace("."," ").trim();
             companyNameOrigin = companyName;
-            System.out.println(companyNameOrigin+"  "+phoneOrigin);
+            i++;
+            if(i>31){
+                Thread.sleep(300000);
+            }
+            //System.out.println(companyNameOrigin+"  "+phoneOrigin);
             companyName = replaceSpaceToBash(companyName);
             getDataFromWeb(companyName);
 //            Thread.sleep(10000);
         }
     }
 
-    private static void getDataFromWeb(String companyName){
-        try {
-            String Url = URL_HEAD + companyName;
-            System.out.println(Url);
+    private static void getDataFromWeb(String companyName) throws Exception{
+            try {
+                String Url = URL_HEAD + companyName;
+                System.out.println(Url);
 //        originStr = Utils.streamToString(Utils.getUrlStream(Url));
 //        System.out.println(originStr);
 
-            wc.getOptions().setJavaScriptEnabled(true); //启用JS解释器，默认为true
-            wc.getOptions().setCssEnabled(false); //禁用css支持
+                wc.getOptions().setJavaScriptEnabled(true); //启用JS解释器，默认为true
+                wc.getOptions().setCssEnabled(false); //禁用css支持
 //        wc.getOptions().setProxyConfig(new ProxyConfig("72.159.158.210",3128));
-            wc.getCookieManager().setCookiesEnabled(false);
-            wc.getOptions().setThrowExceptionOnScriptError(false); //js运行错误时，是否抛出异常
-            wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
-            wc.getOptions().setTimeout(10000); //设置连接超时时间 ，这里是10S。如果为0，则无限期等待
+                wc.getCookieManager().setCookiesEnabled(false);
+                wc.getOptions().setThrowExceptionOnScriptError(false); //js运行错误时，是否抛出异常
+                wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
+                wc.getOptions().setTimeout(10000); //设置连接超时时间 ，这里是10S。如果为0，则无限期等待
 
-            wc.waitForBackgroundJavaScript(600 * 1000);
-            wc.setAjaxController(new NicelyResynchronizingAjaxController());
+                wc.waitForBackgroundJavaScript(600 * 1000);
+                wc.setAjaxController(new NicelyResynchronizingAjaxController());
 
-            HtmlPage page = wc.getPage(Url);
-            wc.waitForBackgroundJavaScript(1000 * 3);
-            wc.setJavaScriptTimeout(0);
+                HtmlPage page = wc.getPage(Url);
+                wc.waitForBackgroundJavaScript(1000 * 3);
+                wc.setJavaScriptTimeout(0);
 //        System.out.println(page);
-            String pageXml = page.asXml(); //以xml的形式获取响应文本
+                String pageXml = page.asXml(); //以xml的形式获取响应文本
 //        doc = Jsoup.connect(Url).get();
-            doc = Jsoup.parse(pageXml);
-            //System.out.println(doc);
-            getData(companyName);
-        }
-        catch (Exception e){
-            if(e instanceof SocketException){
-                proxynum++;
-                SetWebClient();
-                getDataFromWeb(companyName);
+                doc = Jsoup.parse(pageXml);
+                //System.out.println(doc);
+                getData(companyName);
             }
-        }
+            catch (Exception e){
+                System.out.println(e.toString());
+                if(e instanceof SocketException){
+                    SetWebClient();
+                    getDataFromWeb(companyName);
+                }
+            }
     }
 
     private static void SetWebClient(){
-        wc = new WebClient(BrowserVersion.CHROME,proxyList.get(proxynum),proxyPort.get(proxynum));
+        //wc = new WebClient(BrowserVersion.CHROME,proxyList.get(proxynum),proxyPort.get(proxynum));
+        //wc = new WebClient(BrowserVersion.CHROME,"58.176.46.248",80);
+        wc = new WebClient(BrowserVersion.CHROME);
     }
 
     private static void ReadExcel() throws Exception{
