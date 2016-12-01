@@ -51,16 +51,14 @@ public class CompanyDatabaseToExcel {
     private static String phoneOrigin;
     private static int i = 0;
 
-    public static void main(String args[]) {
+    public static void main(String args[]){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    //HideMe();
+//                    HideMe();
                     ReadExcel();
-
-                    //SetWebClient();
-
+//                    SetWebClient();
                     File folder = new File(path);
                     File[] companyFile = folder.listFiles();
                     for (int i = 0; i < companyFile.length; i++) {
@@ -71,7 +69,8 @@ public class CompanyDatabaseToExcel {
 
                     OutputExcel();
                     System.exit(0);
-                } catch (Exception e) {
+                }
+                catch (Exception e){
                     e.printStackTrace();
                     OutputExcel();
                     System.exit(-1);
@@ -80,69 +79,72 @@ public class CompanyDatabaseToExcel {
         }).start();
     }
 
-    private static void HideMe() throws Exception {
+    private static void HideMe() throws Exception{
         Scanner reader1 = new Scanner(new File(proxyPath));
-        while (reader1.hasNextLine()) {
+        while(reader1.hasNextLine()){
             String proxy = reader1.nextLine();
             proxyList.add(proxy.split(" ")[0].trim());
             proxyPort.add(Integer.parseInt(proxy.split(" ")[1].trim()));
         }
     }
 
-    private static void getFile(String filePath) throws Exception {
+    private static void getFile(String filePath) throws Exception{
         Scanner reader = new Scanner(new File(filePath));
-        while (reader.hasNextLine()) {
+        while(reader.hasNextLine()){
             String originStr = reader.nextLine().trim();
-            phoneOrigin = originStr.substring(originStr.length() - 9, originStr.length()).replace(" ", "");
-            String companyName = originStr.substring(0, originStr.length() - 9).replace(".", " ").trim();
-            companyNameOrigin = companyName;
-            i++;
-            if (i > 31) {
-                Thread.sleep(300000);
-                i=0;
+            if (originStr.equals("")){
+                continue;
             }
-            //System.out.println(companyNameOrigin+"  "+phoneOrigin);
+            phoneOrigin = originStr.substring(originStr.length()-9,originStr.length()).replace(" ","");
+            String companyName = originStr.substring(0,originStr.length()-9).replace("."," ").trim();
+            companyNameOrigin = companyName;
+            System.out.println(companyNameOrigin+"  "+phoneOrigin);
             companyName = replaceSpaceToBash(companyName);
             getDataFromWeb(companyName);
 //            Thread.sleep(10000);
+            i++;
+            if(i >=20){
+                Thread.sleep(300000);
+                System.out.print("sleep 5 minutes");
+                i = 0;
+            }
         }
     }
 
-    private static void getDataFromWeb(String companyName) throws Exception {
-            String Url = URL_HEAD + companyName;
-            System.out.println(Url);
+    private static void getDataFromWeb(String companyName) throws Exception{
+        String Url = URL_HEAD + companyName;
+        System.out.println(Url);
 //        originStr = Utils.streamToString(Utils.getUrlStream(Url));
 //        System.out.println(originStr);
-            wc = new WebClient(BrowserVersion.CHROME);
-            wc.getOptions().setJavaScriptEnabled(true); //启用JS解释器，默认为true
-            wc.getOptions().setCssEnabled(false); //禁用css支持
-//        wc.getOptions().setProxyConfig(new ProxyConfig("72.159.158.210",3128));
-            wc.getCookieManager().setCookiesEnabled(false);
-            wc.getOptions().setThrowExceptionOnScriptError(false); //js运行错误时，是否抛出异常
-            wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
-            wc.getOptions().setTimeout(10000); //设置连接超时时间 ，这里是10S。如果为0，则无限期等待
+        WebClient wc = new WebClient(BrowserVersion.CHROME);
 
-            wc.waitForBackgroundJavaScript(600 * 1000);
-            wc.setAjaxController(new NicelyResynchronizingAjaxController());
+        wc.getOptions().setJavaScriptEnabled(true); //启用JS解释器，默认为true
+        wc.getOptions().setCssEnabled(false); //禁用css支持
+//        wc.getOptions().setProxyConfig(new ProxyConfig("185.10.17.134",3128));
+        wc.getCookieManager().setCookiesEnabled(false);
+        wc.getOptions().setThrowExceptionOnScriptError(false); //js运行错误时，是否抛出异常
+        wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        wc.getOptions().setTimeout(10000); //设置连接超时时间 ，这里是10S。如果为0，则无限期等待
 
-            HtmlPage page = wc.getPage(Url);
-            wc.waitForBackgroundJavaScript(1000 * 3);
-            wc.setJavaScriptTimeout(0);
+        wc.waitForBackgroundJavaScript(600*1000);
+        wc.setAjaxController(new NicelyResynchronizingAjaxController());
+
+        HtmlPage page = wc.getPage(Url);
+        wc.waitForBackgroundJavaScript(1000*3);
+        wc.setJavaScriptTimeout(0);
 //        System.out.println(page);
-            String pageXml = page.asXml(); //以xml的形式获取响应文本
+        String pageXml = page.asXml(); //以xml的形式获取响应文本
 //        doc = Jsoup.connect(Url).get();
-            doc = Jsoup.parse(pageXml);
-            //System.out.println(doc);
-            getData(companyName);
+        doc = Jsoup.parse(pageXml);
+        //System.out.println(doc);
+        getData(companyName);
     }
 
-    private static void SetWebClient() {
-        //wc = new WebClient(BrowserVersion.CHROME,proxyList.get(proxynum),proxyPort.get(proxynum));
-        //wc = new WebClient(BrowserVersion.CHROME,"163.47.11.218",8080);
-        wc = new WebClient(BrowserVersion.CHROME);
+    private static void SetWebClient(){
+        wc = new WebClient(BrowserVersion.CHROME,proxyList.get(proxynum),proxyPort.get(proxynum));
     }
 
-    private static void ReadExcel() throws Exception {
+    private static void ReadExcel() throws Exception{
         FileInputStream fileInputStream = new FileInputStream(excelPath);
 //        POIFSFileSystem ts = new POIFSFileSystem(fileInputStream);
         wb = WorkbookFactory.create(fileInputStream);
@@ -151,28 +153,29 @@ public class CompanyDatabaseToExcel {
         //System.out.println(row.getCell(5));
     }
 
-    private static void OutputExcel() {
+    private static void OutputExcel(){
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(excelPath);
             wb.write(fileOutputStream);
             fileOutputStream.flush();
             fileOutputStream.close();
             System.out.println("Success");
-        } catch (Exception e) {
+        }
+        catch (Exception e){
             e.printStackTrace();
         }
     }
-
-    private static String replaceSpaceToBash(String companyName) {
+    //对获取到的公司名称的处理
+    private static String replaceSpaceToBash(String companyName){
         companyName = companyName.trim();
-        companyName = companyName.replace(" & ", "-").replace("(", "").replace(")", "").replace("\'", " ").replace("&", " ").trim();
+        companyName = companyName.replace(" & ","-").replace("(","").replace(")","").replace("\'"," ").replace("&"," ").trim();
 //        companyName = companyName.replace(". "," ").replace("."," ").trim();
-        companyName = companyName.replace(" ", "-").trim();
+        companyName = companyName.replace(" ","-").trim();
         companyName = companyName.toLowerCase().trim();
         return companyName;
     }
 
-    private static void getData(String companyName) throws Exception {
+    private static void getData(String companyName){
 //        Pattern name = Pattern.compile("<div class=\"col-md-8\"><h1>(.*?)</h1></div><div class=\"col-md-4\">");
 //        Pattern addr = Pattern.compile("<div class=\"row com_address\"><p><span>(.*?)</span></p></div>");
 //        Pattern phone = Pattern.compile("");
@@ -183,55 +186,71 @@ public class CompanyDatabaseToExcel {
 //            System.out.println(m_name.group()+"23333333");
 //        }
 //        System.out.println(doc.getElementsByTag("title").text());
-        String title = doc.getElementsByTag("title").text().split("\\|")[1];
-        if (title.equals(" Internet Yellow Pages ")) {
-            System.out.println(companyNameOrigin);
-            System.out.println(doc.getElementsByTag("title").text().split("\\|")[0]);
-            WriteExcel("", companyNameOrigin, "", "", phoneOrigin, "");
-            return;
-        }
-        //System.out.println(title);
-        String name = doc.getElementsByClass("com_name").select("h1").text();
-        //System.out.println(name);
-        String addr1 = doc.getElementsByClass("com_address").select("span").text();
+        try {
+            String title = doc.getElementsByTag("title").text().split("\\|")[1];
+            if (title.equals(" Internet Yellow Pages ")) {
+                System.out.println(companyNameOrigin);
+                System.out.println(doc.getElementsByTag("title").text().split("\\|")[0]);
+                WriteExcel("",companyNameOrigin,"","",phoneOrigin,"");
+                return;
+            }
+            //System.out.println(title);
+            String name = doc.getElementsByClass("com_name").select("h1").text();
+            //System.out.println(name);
+            String addr1 = doc.getElementsByClass("com_address").select("span").text();
 //        System.out.println(addr.substring(0,addr.length()-7));
-        String addr = addr1.substring(0, addr1.length() - 7);
+            String addr = addr1.substring(0, addr1.length() - 7);
 //        System.out.println(addr.substring(addr.length()-6,addr.length()));
-        String zip = addr1.substring(addr1.length() - 6, addr1.length());
-        String tele_head = doc.getElementsByClass("telephone").select("div").text();
-        String tele = "";
-        if (!tele_head.equals("")) {
-            String tele_tail = doc.getElementsByClass("telephone").select("div").toString();
-            Pattern p = Pattern.compile("data-last=\"(\\d+)\"");
-            Matcher m = p.matcher(tele_tail);
-            //System.out.println(tele_tail);
-            while (m.find()) {
-                //System.out.println(m.group(1));
-                tele = m.group(1);
+            String zip = addr1.substring(addr1.length() - 6, addr1.length());
+            String tele_head = doc.getElementsByClass("telephone").select("div").text();
+            String tele = "";
+            if (!tele_head.equals("")) {
+                String tele_tail = doc.getElementsByClass("telephone").select("div").toString();
+                Pattern p = Pattern.compile("data-last=\"(\\d+)\"");
+                Matcher m = p.matcher(tele_tail);
+                //System.out.println(tele_tail);
+                while (m.find()) {
+                    //System.out.println(m.group(1));
+                    tele = m.group(1);
+                }
+                tele = tele_head.replaceAll("\\s+", "").replace(" ", "").substring(0, 4) + tele;
             }
-            tele = tele_head.replaceAll("\\s+", "").replace(" ", "").substring(0, 4) + tele;
-        }
-        String fax = "";
-        //System.out.println(tele);
-        String fax_head = doc.getElementsByClass("fax").select("div").text();
-        if (!fax_head.equals("")) {
-            String fax_tail = doc.getElementsByClass("fax").select("div").toString();
-            Pattern p1 = Pattern.compile("data-last=\"(\\d+)\"");
-            Matcher m1 = p1.matcher(fax_tail);
-            //System.out.println(fax_tail);
-            while (m1.find()) {
-                fax = m1.group(1);
+            String fax = "";
+            //System.out.println(tele);
+            String fax_head = doc.getElementsByClass("fax").select("div").text();
+            if (!fax_head.equals("")) {
+                String fax_tail = doc.getElementsByClass("fax").select("div").toString();
+                Pattern p1 = Pattern.compile("data-last=\"(\\d+)\"");
+                Matcher m1 = p1.matcher(fax_tail);
+                //System.out.println(fax_tail);
+                while (m1.find()) {
+                    fax = m1.group(1);
+                }
+                fax = fax_head.replaceAll("\\s+", "").replace(" ", "").substring(0, 4) + fax;
+                //System.out.println(fax);
             }
-            fax = fax_head.replaceAll("\\s+", "").replace(" ", "").substring(0, 4) + fax;
-            //System.out.println(fax);
+
+            System.out.println(title + "," + name + "," + addr + "," + zip + "," + tele + "," + fax);
+
+            WriteExcel(title, name, addr, zip, tele, fax);
         }
-
-        System.out.println(title + "," + name + "," + addr + "," + zip + "," + tele + "," + fax);
-
-        WriteExcel(title, name, addr, zip, tele, fax);
+        catch (Exception e){
+            e.printStackTrace();
+            if(e instanceof ArrayIndexOutOfBoundsException){
+                proxynum++;
+                try{
+                    SetWebClient();
+                    getDataFromWeb(companyName);
+                    return;
+                }
+                catch (Exception e1){
+                    e1.printStackTrace();
+                }
+            }
+        }
     }
-
-    private static void WriteExcel(String title, String name, String addr, String zip, String phone, String fax) throws Exception {
+    //把得到的数据写到excal
+    private static void WriteExcel(String title,String name,String addr,String zip,String phone,String fax) {
         row = sheet.createRow(rownum);
         String source = "EYP2016" + title;
         Cell cell = null;
@@ -251,19 +270,19 @@ public class CompanyDatabaseToExcel {
         cell.setCellValue(name);
         cell = row.createCell(6);
         cell.setCellValue(addr);
-        if (!zip.equals("")) {
+        if(!zip.equals("")){
             cell = row.createCell(7);
             cell.setCellValue(Integer.parseInt(zip));
         }
-        if (!phone.equals("")) {
+        if(!phone.equals("")) {
             cell = row.createCell(8);
             cell.setCellValue(Integer.parseInt(phone));
         }
-        if (!fax.equals("")) {
+        if(!fax.equals("")) {
             cell = row.createCell(10);
             cell.setCellValue(Integer.parseInt(fax));
         }
-        System.out.println("YES" + "---" + String.valueOf(rownum));
+        System.out.println("YES"+"---"+String.valueOf(rownum));
         rownum++;
         colnum++;
     }

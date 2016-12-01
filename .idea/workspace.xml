@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0ed09407-3812-4dbd-89d3-a9bac9480371" name="Default" comment="">
+    <list default="true" id="0ed09407-3812-4dbd-89d3-a9bac9480371" name="Default" comment="last version (definitely will not be updated)">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Utils/CompanyDatabaseToExcel.java" afterPath="$PROJECT_DIR$/src/Utils/CompanyDatabaseToExcel.java" />
     </list>
@@ -67,8 +67,8 @@
       <file leaf-file-name="CompanyDatabaseToExcel.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Utils/CompanyDatabaseToExcel.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2584">
-              <caret line="104" column="51" selection-start-line="104" selection-start-column="51" selection-end-line="104" selection-end-column="51" />
+            <state relative-caret-position="4029">
+              <caret line="288" column="1" selection-start-line="288" selection-start-column="1" selection-end-line="288" selection-end-column="1" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -925,7 +925,7 @@
       <workItem from="1480468233351" duration="2860000" />
       <workItem from="1480472576045" duration="19321000" />
       <workItem from="1480555492910" duration="16896000" />
-      <workItem from="1480577071992" duration="2511000" />
+      <workItem from="1480577071992" duration="2907000" />
     </task>
     <task id="LOCAL-00001" summary="Add Base64.Although it does not support the image which size is bigger than 20KB(Image I want is bigger than 20KB.........)">
       <created>1465713050939</created>
@@ -1039,11 +1039,18 @@
       <option name="project" value="LOCAL" />
       <updated>1480576398140</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="last version (definitely will not be updated)">
+      <created>1480580035567</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1480580035567</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="203203000" />
+    <option name="totallyTimeSpent" value="203599000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
@@ -1494,8 +1501,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Utils/CompanyDatabaseToExcel.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2584">
-          <caret line="104" column="51" selection-start-line="104" selection-start-column="51" selection-end-line="104" selection-end-column="51" />
+        <state relative-caret-position="4029">
+          <caret line="288" column="1" selection-start-line="288" selection-start-column="1" selection-end-line="288" selection-end-column="1" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
