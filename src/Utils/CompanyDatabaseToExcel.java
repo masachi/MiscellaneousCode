@@ -147,7 +147,7 @@ public class CompanyDatabaseToExcel {
 
     private static void SetWebClient(){
         //wc = new WebClient(BrowserVersion.CHROME,proxyList.get(proxynum),proxyPort.get(proxynum));
-        //wc = new WebClient(BrowserVersion.CHROME,"58.176.46.248",80);
+        //wc = new WebClient(BrowserVersion.CHROME,"163.47.11.218",8080);
         wc = new WebClient(BrowserVersion.CHROME);
     }
 
