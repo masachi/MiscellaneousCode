@@ -98,14 +98,14 @@ public class CompanyDatabaseToExcel {
             phoneOrigin = originStr.substring(originStr.length()-9,originStr.length()).replace(" ","");
             String companyName = originStr.substring(0,originStr.length()-9).replace("."," ").trim();
             companyNameOrigin = companyName;
-            System.out.println(companyNameOrigin+"  "+phoneOrigin);
+            //System.out.println(companyNameOrigin+"  "+phoneOrigin);
             companyName = replaceSpaceToBash(companyName);
             getDataFromWeb(companyName);
 //            Thread.sleep(10000);
             i++;
             if(i >=20){
                 Thread.sleep(300000);
-                System.out.print("sleep 5 minutes");
+                System.out.println("sleep 5 minutes");
                 i = 0;
             }
         }
@@ -168,7 +168,7 @@ public class CompanyDatabaseToExcel {
     //对获取到的公司名称的处理
     private static String replaceSpaceToBash(String companyName){
         companyName = companyName.trim();
-        companyName = companyName.replace(" & ","-").replace("(","").replace(")","").replace("\'"," ").replace("&"," ").trim();
+        companyName = companyName.replace(" & ","-").replace("(","").replace(")","").replace("\'"," ").replace("&"," ").replace("  "," ").trim();
 //        companyName = companyName.replace(". "," ").replace("."," ").trim();
         companyName = companyName.replace(" ","-").trim();
         companyName = companyName.toLowerCase().trim();
