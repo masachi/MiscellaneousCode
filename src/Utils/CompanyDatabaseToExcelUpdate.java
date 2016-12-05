@@ -314,12 +314,12 @@ public class CompanyDatabaseToExcelUpdate {
             else{
                 System.out.println(name + "," + address + "," + zip + "," + phone);
                 System.out.println(cate + "     "+ originStr.toLowerCase().replace("&","").replace("  "," ").replace(" ","-").trim());
-                wrong++;
-                if(wrong > 60){
-                    System.out.println("This Category is finished");
-                    page = 1;
-                    return;
-                }
+//                wrong++;
+//                if(wrong > 60){
+//                    System.out.println("This Category is finished");
+//                    page = 1;
+//                    return;
+//                }
             }
         }
 
