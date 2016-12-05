@@ -1,21 +1,32 @@
 package Utils;
 
+import Model.Cookies;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.javascript.host.file.FileList;
+import com.gargoylesoftware.htmlunit.util.Cookie;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 import org.apache.poi.ss.usermodel.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.jsoup.select.Evaluator;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
+import java.io.FileReader;
+import java.util.*;
 import java.util.List;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,48 +41,133 @@ public class CompanyDatabaseToExcelUpdate {
 
     private static String path = "D:\\Company Database";
     private static String excelPath = "D:\\company_database.xlsx";
+    private static String cookiePath = "D:\\cookie.json";
 
     private static Sheet sheet;
     private static Workbook wb;
     private static Row row = null;
-    private static int rownum = 3;
+    private static int rownum = 454;
     private static int colnum = 0;
+    private static int num = 0;
     private static int proxynum = 0;
     private static String originStr;
     private static Document doc = null;
     private static WebClient wc = new WebClient(BrowserVersion.CHROME);
     private static int page = 1;
     private static int wrong = 0;
+    private static List<Cookie> cookie = new ArrayList<>();
+    private static List<Cookies> cookies = new ArrayList<>();
+    private static JLabel label2;
 
     public static void main(String[] args){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-//                    HideMe();
+
                     ReadExcel();
-//                    SetWebClient();
 
-                    SetBrowser();
-
-                    File folder = new File(path);
-                    File[] companyFile = folder.listFiles();
-                    for (int i = 0; i < companyFile.length; i++) {
-                        if (companyFile[i].isFile()) {
-                            getFile(companyFile[i].getAbsolutePath());
+                    JFrame frame = new JFrame("H Pages");
+                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    frame.setSize(800,600);
+                    frame.setLayout(new GridLayout(1,2));
+                    Container c = frame.getContentPane();
+                    JPanel panel1 = new JPanel(new GridLayout(3,2));
+                    JTextArea origin = new JTextArea();
+                    origin.setSize(800,400);
+                    origin.setLineWrap(true);
+//                    panel.add(origin, FlowLayout.LEFT);
+                    JScrollPane pane = new JScrollPane(origin);
+                    c.add(pane);
+                    JLabel label = new JLabel();
+                    label.setText("行业");
+                    panel1.add(label);
+                    JTextArea cate = new JTextArea();
+                    cate.setSize(50,50);
+                    panel1.add(cate);
+//                    panel.add(cate,FlowLayout.LEFT);
+//                    frame.add(cate,FlowLayout.LEADING);
+                    JLabel label1 = new JLabel();
+                    label1.setText("行数");
+                    panel1.add(label1);
+                    JTextArea row = new JTextArea();
+                    row.setSize(50,100);
+                    panel1.add(row);
+//                    row.setVisible(true);
+//                    panel.add(row,FlowLayout.LEFT);
+//                    frame.add(row,FlowLayout.LEADING);
+                    JButton button = new JButton();
+                    button.setText("输出到Excel");
+                    button.setVisible(true);
+                    button.setSize(20,20);
+                    panel1.add(button);
+                    label2 = new JLabel();
+                    label2.setText("");
+                    panel1.add(label2);
+//                    panel.add(button,FlowLayout.LEFT);
+                    c.add(panel1);
+                    button.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            if(!origin.getText().equals("") && !cate.getText().equals("") && !row.getText().equals("")){
+                                try {
+                                    rownum = Integer.parseInt(row.getText()) -1;
+                                    originStr = cate.getText();
+                                    getDataFromLocal(origin.getText(), cate.getText());
+                                    frame.repaint();
+                                }
+                                catch (Exception e1){
+                                    e1.printStackTrace();
+                                }
+                            }
+                            else{
+                                label2.setText("空");
+                                frame.repaint();
+                            }
                         }
-                    }
+                    });
+                    frame.setVisible(true);
+//                    HideMe();
+
+//                    ReadCookie();
+//
+//                    ReadExcel();
+////                    SetWebClient();
+//
+//                    SetBrowser();
+//
+//                    SetCookie();
+//
+//                    File folder = new File(path);
+//                    File[] companyFile = folder.listFiles();
+//                    for (int i = 0; i < companyFile.length; i++) {
+//                        if (companyFile[i].isFile()) {
+//                            getFile(companyFile[i].getAbsolutePath());
+//                        }
+//                    }
+
+
 
                     //OutputExcel();
-                    System.exit(0);
                 }
                 catch (Exception e){
                     e.printStackTrace();
-                    OutputExcel();
+                    //OutputExcel();
                     System.exit(-1);
                 }
             }
         }).start();
+    }
+
+    private static void ReadCookie() throws Exception{
+        cookies = new Gson().fromJson(new JsonReader(new FileReader("cookie/cookie.json")),new TypeToken<List<Cookies>>(){}.getType());
+    }
+
+    private static void SetCookie(){
+        for(int i=0;i<cookies.size();i++){
+            Cookie cookieIns = new Cookie(cookies.get(i).getDomain(),cookies.get(i).getName(),cookies.get(i).getValue());
+            wc.getCookieManager().addCookie(cookieIns);
+        }
     }
 
     private static void ReadExcel() throws Exception{
@@ -97,6 +193,18 @@ public class CompanyDatabaseToExcelUpdate {
 
         wc.waitForBackgroundJavaScript(1000*3);
         wc.setJavaScriptTimeout(0);
+
+//        wc.getCookieManager().addCookie(new Cookie());
+        wc.addRequestHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+        wc.addRequestHeader("Accept-Encoding","gzip, deflate, sdch");
+        wc.addRequestHeader("Accept-Language","zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.4");
+        wc.addRequestHeader("Cache-Control","max-age=0");
+        wc.addRequestHeader("Connection","keep-alive");
+        wc.addRequestHeader("DNT","1");
+        wc.addRequestHeader("Host","www.yellowpages.com.sg");
+        wc.addRequestHeader("If-Modified-Since","Mon, 05 Dec 2016 03:43:37 +0000");
+        wc.addRequestHeader("Upgrade-Insecure-Requests","1");
+        wc.addRequestHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.59 Safari/537.36");
     }
 
     private static void getFile(String filePath) throws Exception{
@@ -115,7 +223,7 @@ public class CompanyDatabaseToExcelUpdate {
     }
 
     private static String replaceSpaceToAdd(String category){
-        category = category.trim().replace(" ","+").replace("-","").trim();
+        category = category.trim().replace(" ","+").trim();
         return category;
     }
 
@@ -133,7 +241,7 @@ public class CompanyDatabaseToExcelUpdate {
     }
 
     private static void getDataFromWeb(String category) throws Exception{
-        String Url = URL_HEAD + category + URL_PER + URL_PAGE + page + URL_SORT;
+        String Url = URL_HEAD + category + URL_PER + URL_PAGE + page;
         System.out.println(Url);
 //        originStr = Utils.streamToString(Utils.getUrlStream(Url));
 //        System.out.println(originStr);
@@ -141,6 +249,22 @@ public class CompanyDatabaseToExcelUpdate {
         HtmlPage page = wc.getPage(Url);
 //        System.out.println(page);
         String pageXml = page.asXml(); //以xml的形式获取响应文本
+//        doc = Jsoup.connect(Url).get();
+        //System.out.println(pageXml);
+        doc = Jsoup.parse(pageXml);
+        //System.out.println(doc);
+        getData(category);
+    }
+
+    private static void getDataFromLocal(String pageXml,String category) throws Exception{
+//        String Url = URL_HEAD + category + URL_PER + URL_PAGE + page;
+//        System.out.println(Url);
+////        originStr = Utils.streamToString(Utils.getUrlStream(Url));
+////        System.out.println(originStr);
+//
+//        HtmlPage page = wc.getPage(Url);
+////        System.out.println(page);
+//        String pageXml = page.asXml(); //以xml的形式获取响应文本
 //        doc = Jsoup.connect(Url).get();
         //System.out.println(pageXml);
         doc = Jsoup.parse(pageXml);
@@ -171,16 +295,25 @@ public class CompanyDatabaseToExcelUpdate {
         for(Element companyDetail : companyDetailElements){
             String name = companyDetail.getElementsByClass("box-head-left").select("a[title]").text().trim();
             String addr = companyDetail.getElementsByClass("address").text();
-            String address = addr.substring(0, addr.length() - 7).trim();
-            String zip = addr.substring(addr.length() - 6, addr.length()).trim();
+            String address = "";
+            String zip = "";
+            try {
+                address = addr.substring(0, addr.length() - 7).trim();
+                zip = addr.substring(addr.length() - 6, addr.length()).trim();
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
             String phone = companyDetail.getElementsByClass("show_number").select("a[href]").attr("href").replace("tel:","").trim();
             String cate = companyDetail.getElementsByClass("com_cats").select("a[href]").attr("href").replace("http://www.yellowpages.com.sg/category/","").trim();
             if(cate.equals(originStr.toLowerCase().replace("&","").replace("  "," ").replace(" ","-").trim())) {
                 System.out.println(name + "," + address + "," + zip + "," + phone);
+                num++;
                 WriteExcel(category, name,address,zip,phone);
             }
             else{
                 System.out.println(name + "," + address + "," + zip + "," + phone);
+                System.out.println(cate + "     "+ originStr.toLowerCase().replace("&","").replace("  "," ").replace(" ","-").trim());
                 wrong++;
                 if(wrong > 60){
                     System.out.println("This Category is finished");
@@ -230,8 +363,10 @@ public class CompanyDatabaseToExcelUpdate {
 //            }
 //        }
         OutputExcel();
+        String fk = "写了" + page + "次"+","+num+"条";
         page++;
-        getDataFromWeb(category);
+        label2.setText(fk);
+        num = 0;
     }
     //把得到的数据写到excal
     private static void WriteExcel(String category,String name,String addr,String zip,String phone) {
