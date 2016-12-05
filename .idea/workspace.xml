@@ -39,8 +39,8 @@
       <file leaf-file-name="CompanyDatabaseToExcelUpdate.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Utils/CompanyDatabaseToExcelUpdate.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="131">
-              <caret line="317" column="33" selection-start-line="317" selection-start-column="33" selection-end-line="317" selection-end-column="33" />
+            <state relative-caret-position="287">
+              <caret line="370" column="32" selection-start-line="370" selection-start-column="32" selection-end-line="370" selection-end-column="32" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -922,7 +922,7 @@
       <workItem from="1480900951702" duration="734000" />
       <workItem from="1480905260372" duration="2767000" />
       <workItem from="1480908452949" duration="8592000" />
-      <workItem from="1480923036617" duration="6535000" />
+      <workItem from="1480923036617" duration="7246000" />
     </task>
     <task id="LOCAL-00001" summary="Add Base64.Although it does not support the image which size is bigger than 20KB(Image I want is bigger than 20KB.........)">
       <created>1465713050939</created>
@@ -1064,11 +1064,18 @@
       <option name="project" value="LOCAL" />
       <updated>1480928920867</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="the ugly version.............">
+      <created>1480929642747</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1480929642747</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="250002000" />
+    <option name="totallyTimeSpent" value="250713000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
@@ -1530,8 +1537,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Utils/CompanyDatabaseToExcelUpdate.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="131">
-          <caret line="317" column="33" selection-start-line="317" selection-start-column="33" selection-end-line="317" selection-end-column="33" />
+        <state relative-caret-position="287">
+          <caret line="370" column="32" selection-start-line="370" selection-start-column="32" selection-end-line="370" selection-end-column="32" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

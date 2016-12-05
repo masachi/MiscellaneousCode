@@ -58,6 +58,7 @@ public class CompanyDatabaseToExcelUpdate {
     private static List<Cookie> cookie = new ArrayList<>();
     private static List<Cookies> cookies = new ArrayList<>();
     private static JLabel label2;
+    private static JTextArea row1;
 
     public static void main(String[] args){
         new Thread(new Runnable() {
@@ -90,9 +91,9 @@ public class CompanyDatabaseToExcelUpdate {
                     JLabel label1 = new JLabel();
                     label1.setText("行数");
                     panel1.add(label1);
-                    JTextArea row = new JTextArea();
-                    row.setSize(50,100);
-                    panel1.add(row);
+                    row1 = new JTextArea();
+                    row1.setSize(50,100);
+                    panel1.add(row1);
 //                    row.setVisible(true);
 //                    panel.add(row,FlowLayout.LEFT);
 //                    frame.add(row,FlowLayout.LEADING);
@@ -109,9 +110,9 @@ public class CompanyDatabaseToExcelUpdate {
                     button.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            if(!origin.getText().equals("") && !cate.getText().equals("") && !row.getText().equals("")){
+                            if(!origin.getText().equals("") && !cate.getText().equals("") && !row1.getText().equals("")){
                                 try {
-                                    rownum = Integer.parseInt(row.getText()) -1;
+                                    rownum = Integer.parseInt(row1.getText()) -1;
                                     originStr = cate.getText();
                                     getDataFromLocal(origin.getText(), cate.getText());
                                     frame.repaint();
@@ -366,6 +367,8 @@ public class CompanyDatabaseToExcelUpdate {
         String fk = "写了" + page + "次"+","+num+"条";
         page++;
         label2.setText(fk);
+        rownum = Integer.parseInt(row1.getText()) + num;
+        row1.setText(rownum+"");
         num = 0;
     }
     //把得到的数据写到excal
