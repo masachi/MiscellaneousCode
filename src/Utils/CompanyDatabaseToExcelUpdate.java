@@ -40,7 +40,7 @@ public class CompanyDatabaseToExcelUpdate {
     private static String URL_SORT = "&sort=all";
 
     private static String path = "D:\\Company Database";
-    private static String excelPath = "D:\\company_database.xlsx";
+    private static String excelPath = "D:\\company_database_masachi.xlsx";
     private static String cookiePath = "D:\\cookie.json";
 
     private static Sheet sheet;
@@ -73,7 +73,7 @@ public class CompanyDatabaseToExcelUpdate {
                     frame.setSize(800,600);
                     frame.setLayout(new GridLayout(1,2));
                     Container c = frame.getContentPane();
-                    JPanel panel1 = new JPanel(new GridLayout(3,2));
+                    JPanel panel1 = new JPanel(new GridLayout(4,2));
                     JTextArea origin = new JTextArea();
                     origin.setSize(800,400);
                     origin.setLineWrap(true);
@@ -81,7 +81,7 @@ public class CompanyDatabaseToExcelUpdate {
                     JScrollPane pane = new JScrollPane(origin);
                     c.add(pane);
                     JLabel label = new JLabel();
-                    label.setText("行业");
+                    label.setText("");
                     panel1.add(label);
                     JTextArea cate = new JTextArea();
                     cate.setSize(50,50);
@@ -307,7 +307,7 @@ public class CompanyDatabaseToExcelUpdate {
             }
             String phone = companyDetail.getElementsByClass("show_number").select("a[href]").attr("href").replace("tel:","").trim();
             String cate = companyDetail.getElementsByClass("com_cats").select("a[href]").attr("href").replace("http://www.yellowpages.com.sg/category/","").trim();
-            if(cate.equals(originStr.toLowerCase().replace("&","").replace("  "," ").replace(" ","-").trim())) {
+            if(cate.contains(originStr.toLowerCase().replace("&","").replace("  "," ").replace(" ","-").trim())) {
                 System.out.println(name + "," + address + "," + zip + "," + phone);
                 num++;
                 WriteExcel(category, name,address,zip,phone);
