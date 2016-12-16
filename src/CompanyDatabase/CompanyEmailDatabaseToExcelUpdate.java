@@ -144,7 +144,7 @@ public class CompanyEmailDatabaseToExcelUpdate implements Runnable {
 //        wc.getCookieManager().addCookie(new Cookie());
         wc.addRequestHeader("User-Agent", ua.get(random.nextInt(9800)));
 
-        wc.getOptions().setTimeout(50000);
+        wc.getOptions().setTimeout(500000);
     }
 
 //    private static void OutputExcel() {

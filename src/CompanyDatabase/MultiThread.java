@@ -64,8 +64,8 @@ public class MultiThread {
                 start = end;
             }
 
-            signal.await();
-            OutputExcel();
+//            signal.await();
+//            OutputExcel();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,6 +105,7 @@ public class MultiThread {
         cell = row.createCell(11);
         cell.setCellValue(email);
         System.out.println("YES" + "---" + String.valueOf(rownum + 1) + "----" + email);
+        OutputExcel();
     }
 
     private static void OutputExcel() {
