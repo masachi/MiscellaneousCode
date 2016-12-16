@@ -22,6 +22,7 @@ import java.io.FileReader;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
+import static CompanyDatabase.MultiThread.AddList;
 import static CompanyDatabase.MultiThread.WriteExcel;
 
 /**
@@ -77,7 +78,6 @@ public class CompanyEmailDatabaseToExcelUpdate implements Runnable {
 
             System.out.println(Thread.currentThread().getName()+"开始处理数据!!!!!!!");
 
-            signal.countDown();
             SetBrowser();
 
 
@@ -94,6 +94,7 @@ public class CompanyEmailDatabaseToExcelUpdate implements Runnable {
 //                    OutputExcel();
 //                }
             }
+            signal.countDown();
         } catch (Exception e) {
             e.printStackTrace();
             //OutputExcel();
@@ -179,7 +180,8 @@ public class CompanyEmailDatabaseToExcelUpdate implements Runnable {
         Elements sr1 = doc.select(".sr");
         Elements sr = sr1.select(".sr-results");
         if (sr == null) {
-            WriteExcel(j - 1, email);
+            //WriteExcel(j - 1, email);
+            AddList(j-1,email);
             return;
         }
         for (Element ele : sr) {
@@ -187,12 +189,14 @@ public class CompanyEmailDatabaseToExcelUpdate implements Runnable {
             email = ele.select(".sr-details").select("li:contains(@)").text();
             //System.out.println(j+"+++"+companyName+"+++"+company+"++"+email);
             if (companyName.contains(company) && !email.equals("")) {
-                WriteExcel(j - 1, email.replace("Email : ",""));
+                //WriteExcel(j - 1, email.replace("Email : ",""));
+                AddList(j - 1, email.replace("Email : ",""));
                 return;
             }
         }
         if (email.equals("")) {
-            WriteExcel(j - 1, email);
+            //WriteExcel(j - 1, email);
+            AddList(j - 1, email);
         }
     }
 

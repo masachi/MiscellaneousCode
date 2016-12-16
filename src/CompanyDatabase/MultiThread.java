@@ -49,6 +49,30 @@ public class MultiThread {
     private static int j = 60;
     private static String company;
     private static CountDownLatch signal = new CountDownLatch(20);
+    private static int count = 0;
+    private static List<Tmp> emailList = new ArrayList<>();
+    private static Tmp tmp = new Tmp();
+
+    private static class Tmp{
+        int row;
+        String email;
+
+        public int getRow() {
+            return row;
+        }
+
+        public void setRow(int row) {
+            this.row = row;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+    }
 
     public static void main(String[] args) {
         try {
@@ -58,14 +82,14 @@ public class MultiThread {
             int start = 4;
             int end;
 
-            for(int i=0;i<20;i++){
+            for (int i = 0; i < 20; i++) {
                 end = start + 1000;
-                new Thread(new CompanyEmailDatabaseToExcelUpdate(sheet,excel,ua,start,end,signal)).start();
+                new Thread(new CompanyEmailDatabaseToExcelUpdate(sheet, excel, ua, start, end, signal)).start();
                 start = end;
             }
 
-//            signal.await();
-//            OutputExcel();
+            signal.await();
+            WriteExcelFromList();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -99,13 +123,36 @@ public class MultiThread {
         //System.out.println(row.getCell(5));
     }
 
-    public static synchronized void WriteExcel(int rownum, String email) {
+    public synchronized static void AddList(int rownum, String email){
+        if(!email.equals("")) {
+            tmp.setRow(rownum);
+            tmp.setEmail(email);
+            emailList.add(tmp);
+        }
+        count++;
+        System.out.println("ADD" + "---" + count +""+"-----" +String.valueOf(rownum + 1) + "----" + email);
+    }
+
+    public static void WriteExcel(int rownum, String email) {
         email = email.replace("\r|\n", "").trim();
         row = sheet.getRow(rownum);
         Cell cell;
         cell = row.createCell(11);
         cell.setCellValue(email);
-        System.out.println("YES" + "---" + String.valueOf(rownum + 1) + "----" + email);
+        count++;
+        System.out.println("YES" + "---" + count +""+"-----"+ String.valueOf(rownum + 1) + "----" + email);
+        OutputExcel();
+    }
+
+    public static void WriteExcelFromList(){
+        for(int i=0;i< emailList.size();i++){
+            if(!emailList.get(i).getEmail().equals("")){
+                WriteExcel(emailList.get(i).getRow(),emailList.get(i).getEmail());
+            }
+            if(i%100 == 0){
+                OutputExcel();
+            }
+        }
         OutputExcel();
     }
 
