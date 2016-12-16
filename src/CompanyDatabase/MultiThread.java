@@ -95,6 +95,7 @@ public class MultiThread {
         for (int i = 3; i <= totalrow; i++) {
             excel.put(i + 1, sheet.getRow(i).getCell(5).toString());
         }
+        System.out.println(excel.size());
         //System.out.println(row.getCell(5));
     }
 

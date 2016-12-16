@@ -56,9 +56,9 @@ public class CompanyEmailDatabaseToExcelUpdate implements Runnable {
     private Map<Integer, String> excel = new HashMap<>();
     private List<String> ua = new ArrayList<>();
     private int j;
-    private static String company;
     private int end;
     private CountDownLatch signal;
+    private String company;
 
     public CompanyEmailDatabaseToExcelUpdate(Sheet sheet,Map<Integer,String> excel,List<String> ua,int j,int end,CountDownLatch signal){
         this.sheet = sheet;
@@ -80,11 +80,12 @@ public class CompanyEmailDatabaseToExcelUpdate implements Runnable {
             signal.countDown();
             SetBrowser();
 
+
             for (int i = j; i < end; i++) {
                 company = excel.get(j).replaceAll("Ltd|LTD|Pte|PTE|\\.|S'pore|\\(|\\)|'", "").replace("Engrg", "Engineering").trim().toLowerCase();
                 String url = URL + company.replace(" ", "+") + query;
                 if (sheet.getRow(j - 1).getCell(11) == null || sheet.getRow(j - 1).getCell(11).toString().equals("")) {
-                    getDataFromWeb(url);
+                    getDataFromWeb(url,company);
                 } else {
                     System.out.println("Already!" + "-----" + j);
                 }
@@ -159,7 +160,7 @@ public class CompanyEmailDatabaseToExcelUpdate implements Runnable {
 //        }
 //    }
 
-    private void getDataFromWeb(String Url) throws Exception {
+    private void getDataFromWeb(String Url,String company) throws Exception {
         System.out.println(j+"+++++"+Url);
         HtmlPage page = wc.getPage(Url);
 ////        System.out.println(page);
@@ -169,10 +170,10 @@ public class CompanyEmailDatabaseToExcelUpdate implements Runnable {
         String pageXml = page.asXml();
         doc = Jsoup.parse(pageXml);
         //System.out.println(doc);
-        getEmail();
+        getEmail(company);
     }
 
-    private void getEmail() {
+    private void getEmail(String company) {
         String email = "";
         String companyName = "";
         Elements sr1 = doc.select(".sr");
@@ -183,9 +184,10 @@ public class CompanyEmailDatabaseToExcelUpdate implements Runnable {
         }
         for (Element ele : sr) {
             companyName = ele.select(".sr-title").select("span").select("h2").text().toLowerCase();
-            email = ele.select(".sr-details").select("p:contains(@)").text();
+            email = ele.select(".sr-details").select("li:contains(@)").text();
+            //System.out.println(j+"+++"+companyName+"+++"+company+"++"+email);
             if (companyName.contains(company) && !email.equals("")) {
-                WriteExcel(j - 1, email);
+                WriteExcel(j - 1, email.replace("Email : ",""));
                 return;
             }
         }
