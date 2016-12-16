@@ -1,4 +1,4 @@
-package Utils;
+package CompanyDatabase;
 
 import Model.Cookies;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
