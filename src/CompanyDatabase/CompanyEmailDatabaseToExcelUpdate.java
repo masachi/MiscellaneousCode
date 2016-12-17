@@ -1,6 +1,4 @@
-package CompanyDatabase;
 
-import Model.Cookies;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -22,8 +20,6 @@ import java.io.FileReader;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
-import static CompanyDatabase.MultiThread.AddList;
-import static CompanyDatabase.MultiThread.WriteExcel;
 
 /**
  * Created by sdlds on 2016/12/15.
@@ -56,17 +52,17 @@ public class CompanyEmailDatabaseToExcelUpdate implements Runnable {
     private static String query = "/q/";
     private Map<Integer, String> excel = new HashMap<>();
     private List<String> ua = new ArrayList<>();
-    private int j;
+    private int j = 1;
     private int end;
     private CountDownLatch signal;
     private String company;
 
-    public CompanyEmailDatabaseToExcelUpdate(Sheet sheet,Map<Integer,String> excel,List<String> ua,int j,int end,CountDownLatch signal){
+    public CompanyEmailDatabaseToExcelUpdate(Sheet sheet,Map<Integer,String> excel,List<String> ua,CountDownLatch signal){
         this.sheet = sheet;
         this.excel = excel;
         this.ua = ua;
-        this.j = j;
-        this.end = end;
+        //this.j = j;
+        //this.end = end;
         this.signal = signal;
     }
 
@@ -76,26 +72,33 @@ public class CompanyEmailDatabaseToExcelUpdate implements Runnable {
             //ReadExcel();
             //ReadUA();
 
-            System.out.println(Thread.currentThread().getName()+"开始处理数据!!!!!!!");
+            System.out.println(Thread.currentThread().getName()+"ProcessING!!!!!!!");
 
             SetBrowser();
 
 
-            for (int i = j; i < end; i++) {
+            //for (int i = j; i < end; i++) {
+            j = MultiThread.GetRow();
+
+            while(j != -1) {
                 company = excel.get(j).replaceAll("Ltd|LTD|Pte|PTE|\\.|S'pore|\\(|\\)|'", "").replace("Engrg", "Engineering").trim().toLowerCase();
                 String url = URL + company.replace(" ", "+") + query;
                 if (sheet.getRow(j - 1).getCell(11) == null || sheet.getRow(j - 1).getCell(11).toString().equals("")) {
-                    getDataFromWeb(url,company);
+                    getDataFromWeb(url, company);
                 } else {
                     System.out.println("Already!" + "-----" + j);
                 }
-                j++;
+                //j++;
 //                if (j % 20 == 0) {
 //                    OutputExcel();
 //                }
+                //}
+                j = MultiThread.GetRow();
             }
             signal.countDown();
+
         } catch (Exception e) {
+            if(e instanceof ArrayIndexOutOfBoundsException)
             e.printStackTrace();
             //OutputExcel();
         }
@@ -180,8 +183,8 @@ public class CompanyEmailDatabaseToExcelUpdate implements Runnable {
         Elements sr1 = doc.select(".sr");
         Elements sr = sr1.select(".sr-results");
         if (sr == null) {
-            //WriteExcel(j - 1, email);
-            AddList(j-1,email);
+            //MultiThread.WriteExcel(j - 1, email);
+            //MultiThread.AddList(j-1,email);
             return;
         }
         for (Element ele : sr) {
@@ -189,14 +192,15 @@ public class CompanyEmailDatabaseToExcelUpdate implements Runnable {
             email = ele.select(".sr-details").select("li:contains(@)").text();
             //System.out.println(j+"+++"+companyName+"+++"+company+"++"+email);
             if (companyName.contains(company) && !email.equals("")) {
-                //WriteExcel(j - 1, email.replace("Email : ",""));
-                AddList(j - 1, email.replace("Email : ",""));
+                MultiThread.WriteExcel(j - 1, email.replace("Email : ",""));
+                //MultiThread.AddList(j - 1, email.replace("Email : ",""));
                 return;
             }
         }
         if (email.equals("")) {
-            //WriteExcel(j - 1, email);
-            AddList(j - 1, email);
+            //MultiThread.WriteExcel(j - 1, email);
+            return;
+            //MultiThread.AddList(j - 1, email);
         }
     }
 

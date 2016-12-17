@@ -1,6 +1,5 @@
-package CompanyDatabase;
 
-import Model.Cookies;
+
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.util.Cookie;
@@ -19,12 +18,13 @@ import java.util.concurrent.CountDownLatch;
  * Created by sdlds on 2016/12/16.
  */
 public class MultiThread {
-    private static String excelPath = "D:\\company_database_masachi.xlsx";
+    private static String excelPath = "file/company_database_masachi.xlsx";
+    //private static String excelPath = "/root/masachi/company_database_masachi.xlsx";
     private static Sheet sheet;
     private static Workbook wb;
     private static Row row = null;
     private static int colnum = 0;
-    private static int num = 0;
+    private static int num = 5731;
     private static int proxynum = 0;
     private static String originStr;
     private static Document doc = null;
@@ -32,7 +32,6 @@ public class MultiThread {
     private static int page = 1;
     private static int wrong = 0;
     private static List<Cookie> cookie = new ArrayList<>();
-    private static List<Cookies> cookies = new ArrayList<>();
     private static JLabel label2;
     private static JTextArea row1;
     private static JTextArea row2;
@@ -79,20 +78,29 @@ public class MultiThread {
             ReadExcel();
             ReadUA();
 
-            int start = 4;
-            int end;
 
             for (int i = 0; i < 20; i++) {
-                end = start + 1000;
-                new Thread(new CompanyEmailDatabaseToExcelUpdate(sheet, excel, ua, start, end, signal)).start();
-                start = end;
+            //    end = start + 4000;
+                new Thread(new CompanyEmailDatabaseToExcelUpdate(sheet, excel, ua, signal)).start();
+                //start = end;
             }
 
             signal.await();
-            WriteExcelFromList();
+            //WriteExcelFromList();
+            OutputExcel();
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public synchronized static int GetRow(){
+        num++;
+        if(num<=20061) {
+            return num;
+        }
+        else{
+            return -1;
         }
     }
 
@@ -129,19 +137,26 @@ public class MultiThread {
             tmp.setEmail(email);
             emailList.add(tmp);
         }
+        if(count%100 == 0){
+            WriteExcelFromList();
+            OutputExcel();
+            emailList.clear();
+        }
         count++;
         System.out.println("ADD" + "---" + count +""+"-----" +String.valueOf(rownum + 1) + "----" + email);
     }
 
-    public static void WriteExcel(int rownum, String email) {
-        email = email.replace("\r|\n", "").trim();
-        row = sheet.getRow(rownum);
-        Cell cell;
-        cell = row.createCell(11);
-        cell.setCellValue(email);
+    public static synchronized void WriteExcel(int rownum, String email) {
+        if(!email.equals("")) {
+            email = email.replace("\r|\n", "").trim();
+            row = sheet.getRow(rownum);
+            Cell cell;
+            cell = row.createCell(11);
+            cell.setCellValue(email);
+            OutputExcel();
+        }
         count++;
         System.out.println("YES" + "---" + count +""+"-----"+ String.valueOf(rownum + 1) + "----" + email);
-        OutputExcel();
     }
 
     public static void WriteExcelFromList(){
@@ -149,14 +164,14 @@ public class MultiThread {
             if(!emailList.get(i).getEmail().equals("")){
                 WriteExcel(emailList.get(i).getRow(),emailList.get(i).getEmail());
             }
-            if(i%100 == 0){
-                OutputExcel();
-            }
+//            if(i%100 == 0){
+//                OutputExcel();
+//            }
         }
-        OutputExcel();
+        //OutputExcel();
     }
 
-    private static void OutputExcel() {
+    private static synchronized void OutputExcel() {
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(excelPath);
             wb.write(fileOutputStream);
