@@ -1,4 +1,4 @@
-
+package CompanyDatabase;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
@@ -24,7 +25,7 @@ public class MultiThread {
     private static Workbook wb;
     private static Row row = null;
     private static int colnum = 0;
-    private static int num = 5731;
+    private static int num = 4;
     private static int proxynum = 0;
     private static String originStr;
     private static Document doc = null;
@@ -44,13 +45,17 @@ public class MultiThread {
     private static String URL = "http://directory.stclassifieds.sg/singapore-directory/";
     private static String query = "/q/";
     private static Map<Integer, String> excel = new HashMap<>();
+    private static Map<Integer, String> comexcel = new HashMap<>();
     private static List<String> ua = new ArrayList<>();
+    private static List<Integer> rowlist = new ArrayList<>();
     private static int j = 60;
     private static String company;
     private static CountDownLatch signal = new CountDownLatch(20);
     private static int count = 0;
     private static List<Tmp> emailList = new ArrayList<>();
     private static Tmp tmp = new Tmp();
+    private static DecimalFormat df = new DecimalFormat("0");
+
 
     private static class Tmp{
         int row;
@@ -81,7 +86,7 @@ public class MultiThread {
 
             for (int i = 0; i < 20; i++) {
             //    end = start + 4000;
-                new Thread(new CompanyEmailDatabaseToExcelUpdate(sheet, excel, ua, signal)).start();
+                new Thread(new CompanyEmailDatabaseToExcelByBing(sheet, excel,comexcel, ua, signal)).start();
                 //start = end;
             }
 
@@ -96,8 +101,8 @@ public class MultiThread {
 
     public synchronized static int GetRow(){
         num++;
-        if(num<=20061) {
-            return num;
+        if(num<=rowlist.size()) {
+            return rowlist.get(num);
         }
         else{
             return -1;
@@ -125,7 +130,14 @@ public class MultiThread {
         sheet = wb.getSheetAt(0);
         int totalrow = sheet.getLastRowNum();
         for (int i = 3; i <= totalrow; i++) {
-            excel.put(i + 1, sheet.getRow(i).getCell(5).toString());
+            //excel.put(i + 1, sheet.getRow(i).getCell(5).toString());
+            if(sheet.getRow(i).getCell(11) == null || sheet.getRow(i).getCell(11).toString().equals("")) {
+                if(sheet.getRow(i).getCell(8) != null && !sheet.getRow(i).getCell(8).toString().equals("")) {
+                    excel.put(i + 1, df.format(Double.valueOf(sheet.getRow(i).getCell(8).toString().replace("-","").replace("(","").replace(")",""))));
+                    rowlist.add(i+1);
+                    comexcel.put(i + 1, sheet.getRow(i).getCell(5).toString());
+                }
+            }
         }
         System.out.println(excel.size());
         //System.out.println(row.getCell(5));
