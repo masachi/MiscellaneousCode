@@ -180,7 +180,7 @@
         <jarDirectory url="file://$MODULE_DIR$/libs/htmlunit" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/libs/jdic-0.9.2.jar!/" />
@@ -189,7 +189,8 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="libs" level="project" />
-    <orderEntry type="library" name="htmlunit" level="project" />
+    <orderEntry type="library" exported="" name="libs" level="project" />
+    <orderEntry type="library" exported="" name="htmlunit" level="project" />
+    <orderEntry type="library" name="slf4j" level="project" />
   </component>
 </module>
