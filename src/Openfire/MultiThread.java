@@ -18,7 +18,6 @@ import java.util.List;
  * Created by Masachi on 2017/3/7.
  */
 public class MultiThread {
-    //http://jabber.hylaa.net:5222
     public static String host = "127.0.0.1";
     public static int port = 5222;
     //public static String serviceName = "f491f1b3cf7c";
