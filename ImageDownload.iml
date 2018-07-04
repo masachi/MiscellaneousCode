@@ -192,5 +192,6 @@
     <orderEntry type="library" exported="" name="libs" level="project" />
     <orderEntry type="library" exported="" name="htmlunit" level="project" />
     <orderEntry type="library" name="slf4j" level="project" />
+    <orderEntry type="library" name="conversaion" level="project" />
   </component>
 </module>
