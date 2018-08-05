@@ -1,6 +1,9 @@
 package Conversaion;
 
 
+import com.aspose.cells.CellsHelper;
+import com.aspose.slides.FontsLoader;
+import com.aspose.words.FontSettings;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -64,6 +67,9 @@ public class MainClass {
             String inPath = values.inFilePath;
             String outPath = values.outFilePath;
             boolean shouldShowMessages = values.verbose;
+            String fontPath = values.font;
+
+            initializeFonts(fontPath);
 
 
             if(inPath == null){
@@ -155,6 +161,9 @@ public class MainClass {
         @Option(name = "-verbose", aliases = {"-v"}, required = false, usage = "To see intermediate processing messages.")
         public boolean verbose = true;
 
+        @Option(name = "-font", aliases = {"-f"}, required = false, usage = "font path")
+        public String font = null;
+
     }
 
     //From http://stackoverflow.com/questions/941272/how-do-i-trim-a-file-extension-from-a-string-in-java
@@ -205,5 +214,17 @@ public class MainClass {
         outFile.createNewFile();
         FileOutputStream oStream = new FileOutputStream(outFile);
         return oStream;
+    }
+
+    private static void initializeFonts(String fontPath) {
+        if(fontPath != null) {
+            System.out.println("Using given fonts path");
+            FontSettings.setFontsFolder(fontPath, false);
+            CellsHelper.setFontDir(fontPath);
+            FontsLoader.loadExternalFonts(new String[]{fontPath});
+        }
+        else{
+            System.out.println("Using system default fonts");
+        }
     }
 }
