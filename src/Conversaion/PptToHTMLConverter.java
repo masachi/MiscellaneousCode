@@ -6,19 +6,18 @@ import com.aspose.slides.SaveFormat;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class PptxToPDFConverter extends Converter {
-
-    public PptxToPDFConverter(String inPath, String outPath, InputStream inStream, OutputStream outStream, boolean showMessages, boolean closeStreamsWhenComplete) {
+public class PptToHTMLConverter extends Converter {
+    public PptToHTMLConverter(String inPath, String outPath, InputStream inStream, OutputStream outStream, boolean showMessages, boolean closeStreamsWhenComplete) {
         super(inPath, outPath, inStream, outStream, showMessages, closeStreamsWhenComplete);
     }
 
     @Override
-    public void convert() {
+    public void convert() throws Exception {
         loading();
         processing();
 
         Presentation powerpoint = new Presentation(inPath);
-        powerpoint.save(outStream, SaveFormat.Pdf);
+        powerpoint.save(outStream, SaveFormat.Html);
 
         finished();
     }

@@ -1,4 +1,4 @@
-package Conversaion;
+package com.gtedx.file_converter;
 
 import java.io.IOException;
 import java.io.InputStream;

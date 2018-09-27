@@ -1,4 +1,4 @@
-package Conversaion;
+package com.gtedx.file_converter;
 
 import com.aspose.slides.Presentation;
 import com.aspose.slides.SaveFormat;

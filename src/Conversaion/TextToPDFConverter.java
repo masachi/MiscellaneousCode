@@ -1,4 +1,4 @@
-package Conversaion;
+package com.gtedx.file_converter;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.BaseFont;

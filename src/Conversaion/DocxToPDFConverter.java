@@ -1,9 +1,7 @@
-package Conversaion;
+package com.gtedx.file_converter;
 
 import com.aspose.words.Document;
-
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 public class DocxToPDFConverter extends Converter {
 

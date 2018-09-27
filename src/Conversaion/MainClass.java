@@ -1,4 +1,4 @@
-package Conversaion;
+package com.gtedx.file_converter;
 
 
 import com.aspose.cells.CellsHelper;
@@ -106,7 +106,6 @@ public class MainClass {
                     converter = null;
                 }
 
-
             } else {
 
                 switch(values.type){
@@ -190,6 +189,33 @@ public class MainClass {
             removedExtension =  filename.substring(0, extensionIndex);
         }
         String addPDFExtension = removedExtension + ".pdf";
+
+        return addPDFExtension;
+    }
+
+    public static String changeExtensionToHTML(String originalPath) {
+
+//		String separator = System.getProperty("file.separator");
+        String filename = originalPath;
+
+//		// Remove the path upto the filename.
+//		int lastSeparatorIndex = originalPath.lastIndexOf(separator);
+//		if (lastSeparatorIndex == -1) {
+//			filename = originalPath;
+//		} else {
+//			filename = originalPath.substring(lastSeparatorIndex + 1);
+//		}
+
+        // Remove the extension.
+        int extensionIndex = filename.lastIndexOf(".");
+
+        String removedExtension;
+        if (extensionIndex == -1){
+            removedExtension =  filename;
+        } else {
+            removedExtension =  filename.substring(0, extensionIndex);
+        }
+        String addPDFExtension = removedExtension + ".html";
 
         return addPDFExtension;
     }

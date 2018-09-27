@@ -1,7 +1,6 @@
-package Conversaion;
+package com.gtedx.file_converter;
 
 import com.aspose.words.Document;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 
