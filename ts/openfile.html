@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <title>ONLYOFFICE</title>
+</head>
+<body>
+<div class="form_onlyoffice" style="height:100%;width: 100%">
+    <div id="iframeEditor">
+    </div>
+</div>
+
+<script type="text/javascript" src="<%= htmlWebpackPlugin.options.onlyofficeURL %>/web-apps/apps/api/documents/api.js"></script>
+<!--<script type="text/javascript" src="https://onlyoffice.hylaa.net/web-apps/apps/api/documents/api.js"></script>-->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/moment/moment.js"></script>
+<script type="text/javascript" language="javascript">
+    var getQueryString = function (name, decode = false) {
+        const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        const r = window.location.search.substr(1).match(reg);
+        if (r != null) {
+            if (decode) {
+                return decodeURIComponent(r[2]);
+            }
+            else {
+                return r[2];
+            }
+        }
+        return null;
+    };
+
+    var docEditor;
+
+    var histories = [];
+
+    var id = getQueryString("id");
+
+    var interface_file_id = getQueryString("interface_file_id");
+
+    var fileId = getQueryString("file_id");
+
+    var tenant_id = getQueryString("tenant_id");
+
+    var fileName = getQueryString("file_name", true);
+
+    var download_url = getQueryString("download_url", true);
+
+    var k1_url = getQueryString("k1_url", true);
+
+    var author = getQueryString("author", true);
+
+    var comment = getQueryString("comment");
+
+    var download = getQueryString("download");
+
+    var edit = getQueryString("edit");
+
+    var fillForms = getQueryString("fillForms");
+
+    var modifyFilter = getQueryString("modifyFilter");
+
+    var review = getQueryString("review");
+
+    var uid = getQueryString("uid");
+
+    var userName = getQueryString("user_name", true);
+
+    var documentType = {
+        text: ['doc', 'docm', 'docx', 'dot', 'equb', 'fodt', 'htm', 'html', 'mht', 'odt', 'ott', 'pdf', 'rtf', 'txt', 'djvu', 'xps'],
+        spreadsheet: ['csv', 'fods', 'ods', 'ots', 'xls', 'xlsm', 'xlsx', 'xlt', 'xltm', 'xltx'],
+        presentation: ['fodp', 'odp', 'otp', 'pot', 'potm', 'potx', 'pps', 'ppsm', 'ppsx', 'ppt', 'pptm', 'pptx']
+    }
+
+
+    var innerAlert = function (message) {
+        if (console && console.log)
+            console.log(message);
+    };
+
+    var onReady = function () {
+        innerAlert("Document editor ready");
+    };
+
+    var onDocumentStateChange = function (event) {
+        var title = document.title.replace(/\*$/g, "");
+        document.title = title + (event.data ? "*" : "");
+    };
+
+    var onRequestEditRights = function () {
+        location.href = location.href.replace(RegExp("mode=view\&?", "i"), "");
+    };
+
+    var onRequestHistory = function (event) {
+
+        let url = k1_url + '/file/' + interface_file_id + '/historys';
+        axios.get(url, {
+            headers: {
+                "X-Hylaa-TenantId": tenant_id,
+                "authorization": "Bearer " + sessionStorage.getItem("accessToken")
+            }
+        }).then((response) => {
+            return response.data;
+        }).then((result) => {
+            if (result.code === 200) {
+                histories = result.body;
+                let fileHistories = [];
+                histories = result.body;
+                result.body.map((item) => {
+                    fileHistories.push({
+                        changes: item.changes,
+                        created: moment(item.created).format('YYYY-MM-DD HH:mm:ss'),
+                        key: item.key,
+                        user: item.user,
+                        version: item.version,
+                        serverVersion: '5.2.4'
+                    })
+                });
+
+                if (fileHistories.length === 0) {
+                    docEditor.refreshHistory({
+                        "error": "No history",
+                    });
+                    return;
+                }
+
+                if (docEditor) {
+
+                    docEditor.refreshHistory({
+                        currentVersion: result.body[0].version,
+                        history: fileHistories
+                    })
+                }
+            }
+        })
+            .catch((error) => {
+                return error.response
+            })
+    };
+
+    var onRequestHistoryData = function (event) {
+        var version = event.data;
+        if (docEditor && histories.length > 0) {
+            for (let history of histories) {
+                if (history.version === version) {
+                    let previous = histories.find((history) => history.version === (version - 1));
+                    let historyData = {
+                        key: history.key,
+                        url: history.url,
+                        version: history.version,
+                    };
+
+                    if (previous) {
+                        historyData['previous'] = {
+                            key: previous.key,
+                            url: previous.url
+                        };
+                        historyData['changesUrl'] = history.changesUrl;
+                    }
+                    docEditor.setHistoryData(historyData);
+                    break;
+                }
+            }
+        }
+    };
+
+    var onRequestHistoryClose = function (event) {
+        document.location.reload();
+    };
+
+    var onError = function (event) {
+        if (event) {
+            innerAlert(event.data);
+        }
+    };
+
+    var onOutdatedVersion = function (event) {
+        location.reload(true);
+    };
+
+    var getDocumentType = function (suffixName) {
+        let type = '';
+        let documentTypes = documentType;
+        for (let i in documentTypes) {
+            for (let y in documentTypes[i]) {
+                if (documentTypes[i][y] === suffixName) {
+                    type = i;
+                    break;
+                }
+            }
+        }
+        console.log(type);
+        return type;
+    };
+
+    var connectEditor = function () {
+
+        let lastIndex = fileName && fileName.lastIndexOf(".") + 1;
+        let suffixName = fileName && fileName.slice(lastIndex, fileName.length);
+        suffixName=suffixName.toLowerCase();
+        let userInfo = {
+            uid: uid,
+            name: userName
+        }
+        if(sessionStorage.getItem('userInfo')) {
+            userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+        }
+
+
+        docEditor = new DocsAPI.DocEditor("iframeEditor", {
+            "width": "100%",
+            "height": "100%",
+            "type": "desktop",
+            "documentType": getDocumentType(suffixName),
+            "token": "",
+            "document": {
+                "title": fileName,
+                "url": download_url, //可以直接下载的地址
+                "fileType": suffixName,
+                "key": id,
+                "info": {
+                    "author": author,
+                    "created": "Sun Nov 25 2018"
+                },
+                "permissions": {
+                    "comment": comment,
+                    "download": true,
+                    "edit": edit,
+                    "fillForms": fillForms,
+                    "modifyFilter": modifyFilter,
+                    "review": review
+                },
+                "token": ""
+            },
+            "editorConfig": {
+                "mode": edit === "true" ? "edit" : "view",
+                "lang": "zh",
+                "callbackUrl": k1_url + "/file/trace?tenant_id=" + tenant_id + "&fileId=" + fileId + "&uid=" + userInfo.uid,
+                // "callbackUrl": 'http://192.168.1.32:8081' + "/file/trace?tenant_id=" + tenant_id + "&fileId=" + fileId + "&uid=" + userInfo.uid,
+                "user": {
+                    "id": userInfo.uid,
+                    "name": userInfo.name
+                },
+                "customization": {
+                    "commentAuthorOnly": true,
+                    "appName": "????x Word Editor",
+                    "about": false,
+                    "chat": false,
+                    "comments": true,
+                    "feedback": false,
+                    "forcesave": true,
+                    "zoom": 140,
+                    "name": "????-X Pte Ltd",
+                    "loaderName": "????x Document",
+                    "loaderLogo": "https://????-files.oss-cn-shanghai.aliyuncs.com/storage/files/logo.png",
+                    "help": false,
+                    "logo": {
+                        "image": "https://????-files.oss-cn-shanghai.aliyuncs.com/storage/files/logo.png",
+                        "imageEmbedded": "https://????-files.oss-cn-shanghai.aliyuncs.com/storage/files/logo.png",
+                        "url": "https://????-files.oss-cn-shanghai.aliyuncs.com/storage/files/logo.png"
+                    }
+                },
+                "fileChoiceUrl": "",
+                "plugins": {
+                    "pluginsData": []
+                },
+                "canCoAuthoring": true,
+                "canUseHistory": true,
+                "canHistoryClose": true,
+                "canHistoryRestore": true,
+                "canSendEmailAddresses": false,
+                "canRequestEditRights": false,
+                "canRequestClose": false,
+                "canRename": false
+            },
+            "events": {
+                "onReady": () => {
+                    console.log("onlyoffice onReady");
+                    onReady();
+                },
+                "onDocumentStateChange": () => {
+                    console.log("onlyoffice onDocumentStateChange");
+                    onDocumentStateChange.bind(this)
+                },
+                'onRequestEditRights': () => {
+                    console.log("onlyoffice onRequestEditRights");
+                    onRequestEditRights.bind(this)
+                },
+                "onError": () => {
+                    console.log("onlyoffice onError"), onError.bind(this)
+                },
+                "onRequestHistory": onRequestHistory,
+                "onRequestHistoryData": onRequestHistoryData,
+                "onRequestHistoryClose": onRequestHistoryClose,
+                "onOutdatedVersion": () => {
+                    console.log("onlyoffice onOutdatedVersion");
+                    onOutdatedVersion.bind(this)
+                },
+                "onCollaborativeChanges": () => {
+                    console.log("onlyoffice onCollaborativeChanges")
+                },
+                'onRequestClose': () => {
+                    console.log("onlyoffice onOutdatedVersion")
+                },
+                'onMakeActionLink': () => {
+                    console.log("onlyoffice onMakeActionLink")
+                },
+                'onInfo': () => {
+                    console.log("onlyoffice onInfo")
+                },
+                'onError': () => {
+                    console.log("onlyoffice onError")
+                },
+                'onDownloadAs': () => {
+                    console.log("onlyoffice onDownloadAs")
+                },
+                'onDocumentReady': () => {
+                    console.log("onlyoffice onDocumentReady")
+                },
+                'onAppReady': () => {
+                    console.log("onlyoffice onAppReady")
+                },
+                'onWarning': () => {
+                    console.log("onlyoffice onWarning")
+                },
+                'onUpdateDocumentVersion': () => {
+                    console.log("onlyoffice onUpdateDocumentVersion")
+                }
+            },
+            "frameEditorId": "iframeEditor"
+        });
+
+        fixSize();
+    };
+
+    var fixSize = function () {
+        let wrapEl = document.getElementsByClassName("form_onlyoffice");
+        if (wrapEl.length) {
+            wrapEl[0].style.height = window.screen.availHeight + "px";
+            window.scrollTo(0, -1);
+            wrapEl[0].style.height = window.innerHeight + "px";
+        }
+    };
+
+    var destroyEditor = function () {
+        if (docEditor) {
+            docEditor.destroyEditor();
+        }
+    };
+
+    if (window.addEventListener) {
+        window.addEventListener("load", connectEditor);
+        window.addEventListener("resize", fixSize);
+
+        window.addEventListener("unload", destroyEditor);
+    } else if (window.attachEvent) {
+        window.attachEvent("onload", connectEditor);
+        window.attachEvent("onresize", fixSize);
+
+        window.addEventListener("onunload", destroyEditor);
+    }
+
+</script>
+</body>
+</html>
