@@ -11,6 +11,52 @@ export default Datepicker;
 
 
 
+import { DatePicker } from 'antd';
+import _ from 'lodash';
+
+const UniDatePicker = (props) => {
+  return (
+    <DatePicker
+      {...props}
+      status={
+        props?.status ??
+        (props?.requiredStatus
+          ? _.isArray(props.value)
+            ? props.value?.length > 0
+              ? ''
+              : 'error'
+            : props.value
+            ? ''
+            : 'error'
+          : '')
+      }
+    />
+  );
+};
+
+const UniRangePicker = (props) => {
+  return (
+    <DatePicker.RangePicker
+      {...props}
+      status={
+        props?.status ??
+        (props?.requiredStatus
+          ? _.isArray(props.value)
+            ? props.value?.length > 0
+              ? ''
+              : 'error'
+            : props.value
+            ? ''
+            : 'error'
+          : '')
+      }
+    />
+  );
+};
+
+export { UniDatePicker, UniRangePicker };
+
+
 
 import dayjs from 'dayjs';
 import { noteOnce } from 'rc-util/es/warning';
